@@ -32,6 +32,7 @@ version = 'latest'  # 'nightly', 'x.x', 'x.x.x', 'yyyymmdd'
 
 title = 'ffmpeg-installer'
 envname = 'FFMPEG_PATH'
+prbenvname = 'FFPROBE_PATH'
 
 is64bits = sys.maxsize > 2**32
 iswin = sys.platform == 'win32' or sys.platform == 'cygwin'
@@ -96,6 +97,7 @@ if not zipFile or isNightlyBuild:
         zipFile = max(zipInfo, key=lambda info: info[1] if re.match(
             zipre, info[0]) else "0")[0]
         version = re.match(zipre, zipFile).group(1)
+        print('Latest version available: {}'.format(version))
 
 zipUrl = '/'.join((releaseUrl, zipFile))
 
@@ -133,11 +135,13 @@ else:
                            copy_function=shutil.copytree)
 
 # set environmental variable
-updateEnv = os.getenv(envname, True)
-if not updateEnv != installDir:
+updateEnv = not os.getenv(envname, False)
+if not updateEnv and updateEnv != installDir:
     updateEnv = force
 
 if updateEnv:
     print('Setting User Environmental Variable {}={}'.format(envname, installBinDir))
     batpath = os.path.join(os.path.dirname(__file__),'setenv.bat')
     subprocess.run([batpath, envname, installBinDir])
+    subprocess.run([batpath, prbenvname, installBinDir])
+    
