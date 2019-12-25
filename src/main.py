@@ -31,6 +31,7 @@ installShared = False
 version = 'latest'  # 'nightly', 'x.x', 'x.x.x', 'yyyymmdd'
 
 title = 'ffmpeg-installer'
+envname = 'FFMPEG_PATH'
 
 is64bits = sys.maxsize > 2**32
 iswin = sys.platform == 'win32' or sys.platform == 'cygwin'
@@ -132,10 +133,11 @@ else:
                            copy_function=shutil.copytree)
 
 # set environmental variable
-updateEnv = os.getenv('FFMPEG_DIR', False)
+updateEnv = os.getenv(envname, True)
 if not updateEnv != installDir:
     updateEnv = force
 
 if updateEnv:
-    print('Setting User Environmental Variable FFMPEG_DIR={}'.format(installBinDir))
-    subprocess.run(['setenv.bat', 'FFMPEG_DIR', installBinDir])
+    print('Setting User Environmental Variable {}={}'.format(envname, installBinDir))
+    batpath = os.path.join(os.path.dirname(__file__),'setenv.bat')
+    subprocess.run([batpath, envname, installBinDir])
