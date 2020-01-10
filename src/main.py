@@ -121,6 +121,7 @@ else:
                     f.write(chunk)
             pbar.close()
 
+        print("Unzipping...")
         with zipfile.ZipFile(zipPath, 'r') as zip_ref:
             zip_ref.extractall(zipDir)
 
@@ -144,4 +145,6 @@ if updateEnv:
     batpath = os.path.join(os.path.dirname(__file__),'setenv.bat')
     subprocess.run([batpath, envname, installBinDir])
     subprocess.run([batpath, prbenvname, installBinDir])
+    print('Done')
     
+input("\nPress Enter to Exit...")
