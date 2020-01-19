@@ -141,8 +141,16 @@ if not updateEnv and updateEnv != installDir:
     updateEnv = force
 
 if updateEnv:
+    def get_correct_path(relative_path):
+        try:
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)
+
     print('Setting User Environmental Variable {}={}'.format(envname, installBinDir))
-    batpath = os.path.join(os.path.dirname(__file__),'setenv.bat')
+    batpath = get_correct_path('setenv.bat')
     subprocess.run([batpath, envname, installBinDir])
     subprocess.run([batpath, prbenvname, installBinDir])
     print('Done')
