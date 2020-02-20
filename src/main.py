@@ -51,13 +51,17 @@ if not installDir:
         ["~", "AppData", "Local", "Programs", "ffmpeg"]))
 
 installBinDir = os.path.join(installDir, 'bin')
+ffmpegPath = os.path.join(installBinDir, "ffmpeg.exe")
+
+if getattr(sys, 'frozen', False):
+    # make pyinstaller to add its base directory to the system path
+    os.environ["PATH"] = sys._MEIPASS + os.pathsep + os.environ["PATH"]
 
 curVer = ''
 delOld = False
 if os.path.exists(installDir):
-    if os.path.exists(installBinDir):
-        res = subprocess.run([os.path.join(
-            installBinDir, "ffmpeg.exe"), "-version"], stdout=subprocess.PIPE)
+    if os.path.exists(ffmpegPath):
+        res = subprocess.run([ffmpegPath, "-version"], stdout=subprocess.PIPE)
         verStr = res.stdout.decode("utf-8")
         curVer = re.match(r'^ffmpeg version (\S+)', verStr).group(1)
 
@@ -141,16 +145,8 @@ if not updateEnv and updateEnv != installDir:
     updateEnv = force
 
 if updateEnv:
-    def get_correct_path(relative_path):
-        try:
-            base_path = sys._MEIPASS
-        except Exception:
-            base_path = os.path.abspath(".")
-
-        return os.path.join(base_path, relative_path)
-
     print('Setting User Environmental Variable {}={}'.format(envname, installBinDir))
-    batpath = get_correct_path('setenv.bat')
+    batpath = 'setenv.bat'
     subprocess.run([batpath, envname, installBinDir])
     subprocess.run([batpath, prbenvname, installBinDir])
     print('Done')

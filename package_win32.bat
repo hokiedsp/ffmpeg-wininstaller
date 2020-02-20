@@ -5,7 +5,7 @@ if exist build rmdir /s /q build
 REM if exist dist rmdir /s /q dist
 
 @REM Python build - just includes .pyc not source code ok
-pyinstaller -F -n %name% -c --add-binary "src\setenv.bat;." src\main.py 
+pyinstaller -F -n %name% -c --add-data "src\setenv.bat;." --hidden-import "pkg_resources.py2_warn" src\main.py 
 
 @REM remove temporary build directory
 if exist build rmdir /s /q build
